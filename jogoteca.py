@@ -8,6 +8,13 @@ class Jogo:
         self.console = console
 
 
+class Usuario:
+    def __init__(self, id, nome, senha):
+        self.id = id
+        self.nome = nome
+        self.senha = senha
+
+
 app = Flask(__name__)
 app.secret_key = 'uma_chave_secreta'
 
@@ -16,6 +23,12 @@ jogo2 = Jogo('god of war', 'mitologia', 'play station')
 jogo3 = Jogo('mortal kombat', 'luta', 'play station')
 lista = [jogo1, jogo2, jogo3]
 
+usuario1 = Usuario('alcir', 'José Alcir', '123')
+usuario2 = Usuario('paula', 'Paula Maria', '234')
+usuario3 = Usuario('benicio', 'Luis Benicio', '345')
+usuarios = {usuario1.id:usuario1,
+            usuario2.id:usuario2,
+            usuario3.id:usuario3}
 
 @app.route('/')
 def index():
@@ -51,11 +64,11 @@ def login():
 
 @app.route('/autenticar', methods=['POST', ])
 def autenticar():
-    if 'mestre' == request.form['senha']:
-        session['usuario_logado'] = request.form['usuario']
-        flash(request.form['usuario'] + ', logado com sucesso!')
+    usuario_ = usuarios[request.form['usuario']]
+    if request.form['usuario'] in usuarios and usuario_.senha == request.form['senha']:
+        session['usuario_logado'] = usuario_.id
+        flash(usuario_.nome + ' logou com sucesso!')
         proxima_pagina = request.form['proxima']
-        # return redirect('/{}'.format(proxima_pagina))
         return redirect(proxima_pagina)
     else:
         flash('não logado , tente novamente.')
@@ -69,5 +82,6 @@ def logout():
     flash('Nenhum usuário logado!')
     # return redirect('/')
     return redirect(url_for('index'))
+
 
 app.run(debug=True)
