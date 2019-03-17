@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect
+from flask import Flask, render_template, request, redirect, session, flash
 
 
 class Jogo:
@@ -9,6 +9,7 @@ class Jogo:
 
 
 app = Flask(__name__)
+app.secret_key = 'uma_chave_secreta'
 
 jogo1 = Jogo('fifa 2019', 'esporte', 'play station')
 jogo2 = Jogo('god of war', 'mitologia', 'play station')
@@ -46,8 +47,11 @@ def login():
 @app.route('/autenticar', methods=['POST', ])
 def autenticar():
     if 'mestre' == request.form['senha']:
+        session['usuario_logado'] = request.form['usuario']
+        flash(request.form['usuario'] + ', logado com sucesso!')
         return redirect('/')
     else:
+        flash('não logado , tente novamente.')
         return redirect('/login')
 
 
